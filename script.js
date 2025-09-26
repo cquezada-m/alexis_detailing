@@ -1,3 +1,32 @@
+// Random Wallpaper Selection for Hero Section
+function setRandomHeroWallpaper() {
+  const wallpapers = [
+    "wallpaper-1",
+    "wallpaper-2",
+    "wallpaper-3",
+    "wallpaper-4",
+  ];
+  const randomIndex = Math.floor(Math.random() * wallpapers.length);
+  const selectedWallpaper = wallpapers[randomIndex];
+
+  const heroElement = document.querySelector(".hero");
+  if (heroElement) {
+    // Remove any existing wallpaper classes
+    wallpapers.forEach((wallpaper) => {
+      heroElement.classList.remove(wallpaper);
+    });
+
+    // Add the selected wallpaper class
+    heroElement.classList.add(selectedWallpaper);
+
+    // Track the wallpaper selection for analytics
+    gtmTrack("hero_wallpaper_loaded", {
+      wallpaper: selectedWallpaper,
+      wallpaper_index: randomIndex + 1,
+    });
+  }
+}
+
 // GTM Data Layer initialization
 window.dataLayer = window.dataLayer || [];
 
@@ -7,8 +36,61 @@ function gtmTrack(eventName, eventData = {}) {
     event: eventName,
     ...eventData,
   });
-  console.log("GTM Event:", eventName, eventData);
 }
+
+// Clear form-related localStorage on page load
+function clearFormStorage() {
+  try {
+    // Clear WhatsApp form data
+    sessionStorage.removeItem("whatsappFormData");
+    localStorage.removeItem("whatsappFormData");
+
+    // Clear any other form-related storage
+    const keysToRemove = [];
+
+    // Check sessionStorage
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (
+        key &&
+        (key.includes("form") ||
+          key.includes("Form") ||
+          key.includes("lead") ||
+          key.includes("Lead"))
+      ) {
+        keysToRemove.push({ storage: "session", key: key });
+      }
+    }
+
+    // Check localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key &&
+        (key.includes("form") ||
+          key.includes("Form") ||
+          key.includes("lead") ||
+          key.includes("Lead"))
+      ) {
+        keysToRemove.push({ storage: "local", key: key });
+      }
+    }
+
+    // Remove identified keys
+    keysToRemove.forEach((item) => {
+      if (item.storage === "session") {
+        sessionStorage.removeItem(item.key);
+      } else {
+        localStorage.removeItem(item.key);
+      }
+    });
+  } catch (e) {
+    // Error silencioso
+  }
+}
+
+// Execute on page load
+clearFormStorage();
 
 // Intersection Observer for view events and animations
 const observerOptions = {
@@ -63,16 +145,22 @@ function animateOnScroll(element) {
     });
   }
 
-  // Animate testimonials
+  // Animate testimonials (skip if will become carousel)
   if (element.classList.contains("testimonials")) {
     const testimonials = element.querySelectorAll(".testimonial");
-    testimonials.forEach((testimonial, index) => {
-      setTimeout(() => {
-        testimonial.style.opacity = "1";
-        testimonial.style.transform = "translateY(0)";
-        testimonial.style.transition = "all 0.6s ease-out";
-      }, index * 200);
-    });
+    if (testimonials.length <= 1) {
+      // Only animate if not enough for carousel
+      testimonials.forEach((testimonial, index) => {
+        testimonial.style.opacity = "0";
+        testimonial.style.transform = "translateY(30px)";
+
+        setTimeout(() => {
+          testimonial.style.opacity = "1";
+          testimonial.style.transform = "translateY(0)";
+          testimonial.style.transition = "all 0.6s ease-out";
+        }, index * 150);
+      });
+    }
   }
 
   // Animate form
@@ -153,6 +241,14 @@ document.addEventListener("DOMContentLoaded", function () {
           const serviceSelect = document.getElementById("servicio");
           if (serviceSelect) {
             serviceSelect.value = serviceType;
+
+            // Disparar eventos para actualizar estado
+            serviceSelect.dispatchEvent(new Event("input", { bubbles: true }));
+            serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
+
+            // Guardar inmediatamente en sessionStorage
+            const currentData = getFormData();
+
             // Add visual feedback
             serviceSelect.style.borderColor = "#D946EF";
             serviceSelect.style.boxShadow = "0 0 0 3px rgba(217, 70, 239, 0.1)";
@@ -166,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Mostrar tooltip de WhatsApp
             showWhatsAppTooltip(
-              "¡Servicio seleccionado! Completa más datos para WhatsApp"
+              "¡Servicio seleccionado! Haz clic aquí para WhatsApp o completa más datos"
             );
           }
         }, 500);
@@ -188,108 +284,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Form handling
-  const leadForm =
-    document.getElementById("leadForm") ||
-    document.querySelector("#contacto form");
-  if (leadForm) {
-    leadForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const formData = new FormData(this);
-      const formObject = {};
-      formData.forEach((value, key) => {
-        formObject[key] = value;
-      });
-
-      // Validate required fields
-      const requiredFields = ["nombre", "servicio"];
-      let isValid = true;
-      let missingFields = [];
-
-      requiredFields.forEach((field) => {
-        const element = document.getElementById(field);
-        if (!element) return;
-
-        if (!element.value) {
-          isValid = false;
-          missingFields.push(field);
-          element.style.borderColor = "#E53E3E";
-        } else {
-          element.style.borderColor = "#E2E8F0";
-        }
-      });
-
-      if (!isValid) {
-        gtmTrack("form_error", {
-          error_type: "validation",
-          missing_fields: missingFields,
-          timestamp: new Date().toISOString(),
-        });
-
-        showFormMessage(
-          "Por favor completa todos los campos obligatorios.",
-          "error"
-        );
-        return;
-      }
-
-      // Track successful form submission
-      gtmTrack("submit_form", {
-        form_data: {
-          nombre: formObject.nombre,
-          servicio: formObject.servicio || "no_specified",
-          horario: formObject.horario || "no_specified",
-          has_message: !!formObject.mensaje,
-        },
-        timestamp: new Date().toISOString(),
-      });
-
-      // Simulate form submission (replace with actual API call)
-      setTimeout(() => {
-        console.log(
-          "📝 Formulario enviado exitosamente, mostrando mensaje de éxito..."
-        );
-        showFormMessage(
-          "¡Gracias! Te contactaremos por WhatsApp en breve para coordinar tu evaluación.",
-          "success"
-        );
-
-        // IMPORTANTE: Capturar datos ANTES del reset
-        const formDataForWhatsApp = {
-          nombre: formObject.nombre,
-          servicio: formObject.servicio,
-          horario: formObject.horario,
-          mensaje: formObject.mensaje,
-        };
-
-        // Guardar datos en sessionStorage para WhatsApp
-        sessionStorage.setItem(
-          "whatsappFormData",
-          JSON.stringify(formDataForWhatsApp)
-        );
-
-        // Reset inicial del formulario (visual)
-        leadForm.reset();
-
-        // Track conversion
-        gtmTrack("conversion_lead", {
-          conversion_type: "form_submission",
-          lead_source: "landing_page",
-          timestamp: new Date().toISOString(),
-        });
-
-        // Usar la nueva función mejorada de WhatsApp
-        setTimeout(() => {
-          console.log(
-            "🚀 Intentando abrir WhatsApp después del envío del formulario..."
-          );
-          sendWhatsAppMessage();
-          // Nota: sendWhatsAppMessage() ya incluye el reseteo completo después de 3 segundos
-        }, 2000);
-      }, 1000);
-    });
-  }
+  // ===== NUEVO SISTEMA DE FORMULARIO MULTI-STEP =====
+  initNewFormSystem();
 
   // FAQ Accordion
   const faqQuestions = document.querySelectorAll(".faq-question");
@@ -502,21 +498,52 @@ function initTypewriter() {
   let deleteSpeed = 80;
   let pauseTime = 2500;
 
+  // Fix height to prevent layout shift
+  function fixTypewriterHeight() {
+    // Find the longest word to calculate maximum height needed
+    let longestWord = "";
+    words.forEach((word) => {
+      if (word.length > longestWord.length) {
+        longestWord = word;
+      }
+    });
+
+    // Temporarily set the longest word to measure height
+    const originalContent = typewriterElement.textContent;
+    typewriterElement.textContent = longestWord;
+
+    // Get the computed height
+    const height = typewriterElement.offsetHeight;
+
+    // Set fixed height to prevent layout shifts
+    typewriterElement.style.height = height + "px";
+    typewriterElement.style.minHeight = height + "px";
+    typewriterElement.style.display = "block";
+
+    // Restore original content
+    typewriterElement.textContent = originalContent;
+  }
+
   function type() {
     const currentWord = words[currentWordIndex];
 
     if (isDeleting) {
       // Deleting characters
-      typewriterElement.textContent = currentWord.substring(
-        0,
-        currentCharIndex - 1
-      );
+      const newText = currentWord.substring(0, currentCharIndex - 1);
+
+      if (newText === "") {
+        // Use a zero-width space to maintain height when empty
+        typewriterElement.innerHTML = "&#8203;"; // Zero-width space
+      } else {
+        typewriterElement.textContent = newText;
+      }
+
       currentCharIndex--;
 
       if (currentCharIndex === 0) {
         isDeleting = false;
         currentWordIndex = (currentWordIndex + 1) % words.length;
-        setTimeout(type, 500); // Pause before typing next word
+        setTimeout(type, 300); // Shorter pause when transitioning
         return;
       }
 
@@ -541,11 +568,23 @@ function initTypewriter() {
     }
   }
 
-  // Start the typewriter effect after a delay
+  // Initialize with first word and fix height
+  typewriterElement.textContent = words[0];
+
+  // Fix height after DOM is fully rendered
   setTimeout(() => {
-    typewriterElement.classList.add("typing");
-    type();
-  }, 2000);
+    fixTypewriterHeight();
+
+    // Reset and start the typewriter effect
+    typewriterElement.textContent = "";
+    typewriterElement.innerHTML = "&#8203;"; // Start with zero-width space
+    currentCharIndex = 0;
+
+    setTimeout(() => {
+      typewriterElement.classList.add("typing");
+      type();
+    }, 500);
+  }, 100);
 }
 
 // Initialize typewriter when DOM is loaded
@@ -1159,59 +1198,438 @@ function animateCounter(element, target) {
   }, stepTime);
 }
 
-// 6. SMART FORM FUNCTIONALITY
-let currentStep = 1;
-const totalSteps = 4;
+// ===== NUEVO SISTEMA DE FORMULARIO MULTI-STEP =====
 
-function nextStep(step) {
-  // Validate current step
+// Variables globales del formulario
+let formState = {
+  currentStep: 1,
+  totalSteps: 4,
+  data: {
+    nombre: "",
+    servicio: "",
+    horario: "",
+    mensaje: "",
+  },
+  preselectedService: null,
+};
+
+// Configurar selección previa de servicios desde botones superiores
+function setupServicePreselection() {
+  const serviceButtons = document.querySelectorAll(".service-cta");
+
+  serviceButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      // Obtener el servicio del data attribute GTM
+      const gtmEvent = this.getAttribute("data-gtm-event");
+      let serviceName = "";
+
+      if (gtmEvent.includes("mesoterapia")) {
+        serviceName = "mesoterapia";
+      } else if (gtmEvent.includes("prp")) {
+        serviceName = "prp";
+      } else if (gtmEvent.includes("lipolaser")) {
+        serviceName = "lipolaser";
+      } else if (gtmEvent.includes("radiofrecuencia")) {
+        serviceName = "radiofrecuencia";
+      } else if (gtmEvent.includes("cavitacion")) {
+        serviceName = "cavitacion";
+      } else if (gtmEvent.includes("vacumterapia")) {
+        serviceName = "vacumterapia";
+      }
+
+      // Guardar servicio preseleccionado
+      formState.preselectedService = serviceName;
+      formState.data.servicio = serviceName;
+
+      // Scroll al formulario
+      const formulario = document.getElementById("contacto");
+      if (formulario) {
+        formulario.scrollIntoView({ behavior: "smooth" });
+
+        // Preseleccionar el servicio en el select después del scroll
+        setTimeout(() => {
+          const servicioSelect = document.getElementById("servicio");
+          if (servicioSelect && serviceName) {
+            servicioSelect.value = serviceName;
+            servicioSelect.dispatchEvent(
+              new Event("change", { bubbles: true })
+            );
+
+            // Actualizar estado del botón WhatsApp
+            updateWhatsAppButtonState();
+          }
+        }, 800);
+      }
+
+      // Tracking GTM
+      gtmTrack("click_service_preselect", {
+        service_selected: serviceName,
+        timestamp: new Date().toISOString(),
+      });
+    });
+  });
+}
+
+// Validar paso actual
+function validateCurrentStep() {
   const currentStepElement = document.querySelector(
-    `.step[data-step="${currentStep}"]`
+    `.step[data-step="${formState.currentStep}"]`
   );
-  const inputs = currentStepElement.querySelectorAll("input, select");
-  let isValid = true;
+  if (!currentStepElement) return false;
 
-  inputs.forEach((input) => {
-    if (input.hasAttribute("required") && !input.value) {
+  const requiredInputs = currentStepElement.querySelectorAll(
+    "input[required], select[required]"
+  );
+  let isValid = true;
+  let firstInvalidInput = null;
+
+  requiredInputs.forEach((input) => {
+    const value = input.value.trim();
+
+    if (!value) {
       isValid = false;
       input.style.borderColor = "#E53E3E";
-      input.focus();
+      input.style.boxShadow = "0 0 0 3px rgba(229, 62, 62, 0.1)";
+
+      if (!firstInvalidInput) {
+        firstInvalidInput = input;
+      }
+
+      // Mostrar mensaje de error
+      showFieldError(input, "Este campo es obligatorio");
     } else {
       input.style.borderColor = "";
+      input.style.boxShadow = "";
+      hideFieldError(input);
     }
   });
 
   if (!isValid) {
+    // Focus en el primer campo inválido (solo en desktop)
+    if (firstInvalidInput && window.innerWidth > 768) {
+      firstInvalidInput.focus();
+    }
+
+    // Tracking de error
     gtmTrack("form_step_error", {
-      step: currentStep,
+      step: formState.currentStep,
       timestamp: new Date().toISOString(),
     });
-    return;
+
+    return false;
   }
 
-  // Hide current step
-  currentStepElement.classList.remove("active");
+  return true;
+}
 
-  // Show next step
-  currentStep = step;
-  const nextStepElement = document.querySelector(`.step[data-step="${step}"]`);
-  nextStepElement.classList.add("active");
+// Mostrar error en campo específico
+function showFieldError(input, message) {
+  hideFieldError(input); // Limpiar error anterior
 
-  // Update progress bar
-  const progress = (currentStep / totalSteps) * 100;
-  document.getElementById("progressBar").style.width = `${progress}%`;
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "field-error-message";
+  errorDiv.textContent = message;
+  errorDiv.style.cssText = `
+    color: #E53E3E;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+    display: block;
+  `;
 
-  // Focus first input in new step
-  const firstInput = nextStepElement.querySelector("input, select");
-  if (firstInput) {
-    setTimeout(() => firstInput.focus(), 300);
+  // Insertar el mensaje directamente después del input
+  if (input.nextSibling) {
+    input.parentNode.insertBefore(errorDiv, input.nextSibling);
+  } else {
+    input.parentNode.appendChild(errorDiv);
+  }
+}
+
+// Ocultar error en campo específico
+function hideFieldError(input) {
+  const existingError = input.parentNode.querySelector(".field-error-message");
+  if (existingError) {
+    existingError.remove();
+  }
+}
+
+// Guardar datos del paso actual
+function saveCurrentStepData() {
+  const currentStepElement = document.querySelector(
+    `.step[data-step="${formState.currentStep}"]`
+  );
+  if (!currentStepElement) return;
+
+  const inputs = currentStepElement.querySelectorAll("input, select, textarea");
+  inputs.forEach((input) => {
+    if (input.name && formState.data.hasOwnProperty(input.name)) {
+      formState.data[input.name] = input.value.trim();
+    }
+  });
+
+  // Guardar en sessionStorage para persistencia
+  sessionStorage.setItem("formState", JSON.stringify(formState));
+}
+
+// Navegar a un paso específico
+function navigateToStep(targetStep) {
+  if (targetStep < 1 || targetStep > formState.totalSteps) return;
+
+  // Ocultar paso actual
+  const currentStepElement = document.querySelector(
+    `.step[data-step="${formState.currentStep}"]`
+  );
+  if (currentStepElement) {
+    currentStepElement.classList.remove("active");
   }
 
+  // Mostrar paso objetivo
+  formState.currentStep = targetStep;
+  const targetStepElement = document.querySelector(
+    `.step[data-step="${targetStep}"]`
+  );
+  if (targetStepElement) {
+    targetStepElement.classList.add("active");
+  }
+
+  // Actualizar barra de progreso
+  const progress = (formState.currentStep / formState.totalSteps) * 100;
+  const progressBar = document.getElementById("progressBar");
+  if (progressBar) {
+    progressBar.style.width = `${progress}%`;
+  }
+
+  // Focus en primer input (solo desktop)
+  if (window.innerWidth > 768) {
+    const firstInput = targetStepElement?.querySelector("input, select");
+    if (firstInput) {
+      setTimeout(() => firstInput.focus(), 300);
+    }
+  }
+
+  // Actualizar estado del botón WhatsApp
+  updateWhatsAppButtonState();
+
+  // Tracking
   gtmTrack("form_step_completed", {
-    step: currentStep - 1,
-    next_step: currentStep,
+    from_step: formState.currentStep - 1,
+    to_step: formState.currentStep,
     progress_percentage: progress,
     timestamp: new Date().toISOString(),
+  });
+}
+
+// Función global nextStep para compatibilidad con HTML
+function nextStep(targetStep) {
+  if (!validateCurrentStep()) {
+    return false;
+  }
+
+  saveCurrentStepData();
+  navigateToStep(targetStep);
+  return true;
+}
+
+// Configurar envío del formulario
+function setupFormSubmission() {
+  const leadForm = document.getElementById("leadForm");
+  if (!leadForm) return;
+
+  // Función para manejar el envío
+  const handleFormSubmit = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Validar que estamos en el último paso
+    if (formState.currentStep !== formState.totalSteps) {
+      return false;
+    }
+
+    // Validar paso actual
+    if (!validateCurrentStep()) {
+      return false;
+    }
+
+    // Guardar datos finales
+    saveCurrentStepData();
+
+    // Validar campos obligatorios
+    const requiredFields = ["nombre", "servicio"];
+    const missingFields = [];
+
+    requiredFields.forEach((field) => {
+      if (!formState.data[field] || formState.data[field].trim() === "") {
+        missingFields.push(field);
+      }
+    });
+
+    if (missingFields.length > 0) {
+      gtmTrack("form_error", {
+        error_type: "validation",
+        missing_fields: missingFields,
+        timestamp: new Date().toISOString(),
+      });
+
+      showFormMessage(
+        "Por favor completa todos los campos obligatorios.",
+        "error"
+      );
+      return false;
+    }
+
+    // Tracking de envío exitoso
+    gtmTrack("submit_form", {
+      form_data: {
+        nombre: formState.data.nombre,
+        servicio: formState.data.servicio,
+        horario: formState.data.horario || "no_specified",
+        has_message: !!formState.data.mensaje,
+        preselected_service: !!formState.preselectedService,
+      },
+      timestamp: new Date().toISOString(),
+    });
+
+    // Procesar envío
+    processFormSubmission();
+  };
+
+  // Event listeners para compatibilidad mobile/desktop
+  leadForm.addEventListener("submit", handleFormSubmit);
+
+  // Event listener adicional para el botón submit
+  const submitButton = leadForm.querySelector('button[type="submit"]');
+  if (submitButton) {
+    // Click event
+    submitButton.addEventListener("click", function (e) {
+      if (formState.currentStep === formState.totalSteps) {
+        // Permitir que el evento submit se dispare naturalmente
+        return;
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
+    // Touch event para mobile
+    submitButton.addEventListener("touchend", function (e) {
+      if (formState.currentStep === formState.totalSteps) {
+        setTimeout(() => {
+          if (leadForm.checkValidity()) {
+            handleFormSubmit.call(leadForm, e);
+          }
+        }, 100);
+      }
+    });
+  }
+}
+
+// Procesar envío del formulario
+function processFormSubmission() {
+  // Mostrar mensaje de éxito
+  showFormMessage(
+    "¡Gracias! Continuemos en WhatsApp para coordinar tu servicio de detailing.",
+    "success"
+  );
+
+  // Preparar datos para WhatsApp
+  const whatsappData = {
+    nombre: formState.data.nombre,
+    servicio: formState.data.servicio,
+    horario: formState.data.horario,
+    mensaje: formState.data.mensaje,
+    preselected: formState.preselectedService,
+  };
+
+  // Guardar en sessionStorage para WhatsApp
+  sessionStorage.setItem("whatsappFormData", JSON.stringify(whatsappData));
+
+  // Reset visual del formulario
+  const leadForm = document.getElementById("leadForm");
+  if (leadForm) {
+    leadForm.reset();
+  }
+
+  // Tracking de conversión
+  gtmTrack("conversion_lead", {
+    conversion_type: "form_submission",
+    lead_source: "landing_page",
+    service_selected: formState.data.servicio,
+    timestamp: new Date().toISOString(),
+  });
+
+  // Enviar a WhatsApp después de un delay
+  setTimeout(() => {
+    sendWhatsAppMessage();
+  }, 500);
+}
+
+// Inicializar todo el sistema de formulario
+function initNewFormSystem() {
+  // Restaurar estado si existe
+  restoreFormState();
+
+  // Configurar componentes
+  setupServicePreselection();
+  setupFormSubmission();
+  setupFormValidation();
+
+  // Inicializar estado del botón WhatsApp
+  updateWhatsAppButtonState();
+}
+
+// Restaurar estado del formulario desde sessionStorage
+function restoreFormState() {
+  try {
+    const savedState = sessionStorage.getItem("formState");
+    if (savedState) {
+      const parsed = JSON.parse(savedState);
+      // Solo restaurar datos, no el paso actual (siempre empezar desde el paso 1)
+      formState.data = { ...formState.data, ...parsed.data };
+      formState.preselectedService = parsed.preselectedService;
+    }
+  } catch (e) {
+    // Error silencioso
+  }
+}
+
+// Configurar validación en tiempo real
+function setupFormValidation() {
+  const leadForm = document.getElementById("leadForm");
+  if (!leadForm) return;
+
+  // Agregar event listeners a todos los inputs
+  const inputs = leadForm.querySelectorAll("input, select, textarea");
+  inputs.forEach((input) => {
+    // Limpiar errores al escribir
+    input.addEventListener("input", function () {
+      if (this.value.trim()) {
+        this.style.borderColor = "";
+        this.style.boxShadow = "";
+        hideFieldError(this);
+      }
+
+      // Guardar datos en tiempo real
+      if (this.name && formState.data.hasOwnProperty(this.name)) {
+        formState.data[this.name] = this.value.trim();
+        sessionStorage.setItem("formState", JSON.stringify(formState));
+      }
+
+      // Actualizar estado del botón WhatsApp
+      updateWhatsAppButtonState();
+    });
+
+    input.addEventListener("change", function () {
+      if (this.name && formState.data.hasOwnProperty(this.name)) {
+        formState.data[this.name] = this.value.trim();
+        sessionStorage.setItem("formState", JSON.stringify(formState));
+      }
+
+      updateWhatsAppButtonState();
+    });
   });
 }
 
@@ -1276,6 +1694,8 @@ function initTestimonialsCarousel() {
   if (testimonials.length <= 1) return;
 
   let currentTestimonial = 0;
+  let autoRotateInterval = null;
+  let isFormActive = false;
 
   // Add carousel structure
   const testimonialsGrid = document.querySelector(".testimonials-grid");
@@ -1283,21 +1703,99 @@ function initTestimonialsCarousel() {
 
   testimonialsGrid.classList.add("testimonials-carousel");
 
+  // Fix container height to prevent layout shifts
+  function fixContainerHeight() {
+    let maxHeight = 0;
+    testimonials.forEach((testimonial) => {
+      testimonial.style.position = "absolute";
+      testimonial.style.opacity = "1";
+      testimonial.style.visibility = "visible";
+      const height = testimonial.offsetHeight;
+      if (height > maxHeight) {
+        maxHeight = height;
+      }
+    });
+
+    // Set fixed height to container
+    testimonialsGrid.style.position = "relative";
+    testimonialsGrid.style.height = maxHeight + "px";
+    testimonialsGrid.style.overflow = "hidden";
+  }
+
+  // Reset any previous inline styles and setup carousel
   testimonials.forEach((testimonial, index) => {
     testimonial.classList.add("testimonial-slide");
-    if (index === 0) testimonial.classList.add("active");
+    testimonial.style.opacity = "";
+    testimonial.style.transform = "";
+    testimonial.style.transition = "";
+    testimonial.style.position = "absolute";
+    testimonial.style.top = "0";
+    testimonial.style.left = "0";
+    testimonial.style.width = "100%";
+
+    if (index === 0) {
+      testimonial.classList.add("active");
+      testimonial.style.opacity = "1";
+      testimonial.style.visibility = "visible";
+    } else {
+      testimonial.style.opacity = "0";
+      testimonial.style.visibility = "hidden";
+    }
   });
 
-  function nextTestimonial() {
+  // Fix height after setup
+  setTimeout(fixContainerHeight, 100);
+
+  // Create navigation dots
+  const carouselNav = document.createElement("div");
+  carouselNav.className = "carousel-nav";
+
+  testimonials.forEach((_, index) => {
+    const dot = document.createElement("div");
+    dot.className = `carousel-dot ${index === 0 ? "active" : ""}`;
+    dot.addEventListener("click", () => goToTestimonial(index));
+    carouselNav.appendChild(dot);
+  });
+
+  testimonialsGrid.parentNode.appendChild(carouselNav);
+
+  function updateDots() {
+    const dots = carouselNav.querySelectorAll(".carousel-dot");
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === currentTestimonial);
+    });
+  }
+
+  function goToTestimonial(index) {
+    if (index === currentTestimonial) return;
+
+    // Fade out current
+    testimonials[currentTestimonial].style.opacity = "0";
+    testimonials[currentTestimonial].style.visibility = "hidden";
     testimonials[currentTestimonial].classList.remove("active");
-    testimonials[currentTestimonial].classList.add("prev");
 
-    currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+    currentTestimonial = index;
 
+    // Fade in new
     setTimeout(() => {
-      testimonials.forEach((t) => t.classList.remove("prev"));
+      testimonials[currentTestimonial].style.opacity = "1";
+      testimonials[currentTestimonial].style.visibility = "visible";
       testimonials[currentTestimonial].classList.add("active");
-    }, 250);
+      updateDots();
+    }, 300);
+
+    gtmTrack("testimonial_clicked", {
+      testimonial_index: currentTestimonial,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  function nextTestimonial() {
+    // Don't auto-rotate if form is active
+    if (isFormActive) return;
+
+    const nextIndex = (currentTestimonial + 1) % testimonials.length;
+    goToTestimonial(nextIndex);
 
     gtmTrack("testimonial_rotated", {
       testimonial_index: currentTestimonial,
@@ -1305,8 +1803,73 @@ function initTestimonialsCarousel() {
     });
   }
 
-  // Auto-rotate every 5 seconds
-  setInterval(nextTestimonial, 5000);
+  function startAutoRotate() {
+    if (autoRotateInterval) clearInterval(autoRotateInterval);
+    autoRotateInterval = setInterval(nextTestimonial, 8000); // Increased to 8 seconds
+  }
+
+  function stopAutoRotate() {
+    if (autoRotateInterval) {
+      clearInterval(autoRotateInterval);
+      autoRotateInterval = null;
+    }
+  }
+
+  // Detect form interaction
+  function detectFormInteraction() {
+    const formInputs = document.querySelectorAll(
+      "#leadForm input, #leadForm select, #leadForm textarea"
+    );
+
+    formInputs.forEach((input) => {
+      input.addEventListener("focus", () => {
+        isFormActive = true;
+        stopAutoRotate();
+      });
+
+      input.addEventListener("blur", () => {
+        // Delay before restarting to avoid immediate restart
+        setTimeout(() => {
+          const activeElement = document.activeElement;
+          const isStillInForm =
+            activeElement &&
+            (activeElement.closest("#leadForm") ||
+              activeElement.id === "whatsappSticky");
+
+          if (!isStillInForm) {
+            isFormActive = false;
+            startAutoRotate();
+          }
+        }, 1000);
+      });
+    });
+
+    // Also pause when hovering over form
+    const form = document.getElementById("leadForm");
+    if (form) {
+      form.addEventListener("mouseenter", () => {
+        isFormActive = true;
+        stopAutoRotate();
+      });
+
+      form.addEventListener("mouseleave", () => {
+        setTimeout(() => {
+          const activeElement = document.activeElement;
+          const isStillInForm =
+            activeElement && activeElement.closest("#leadForm");
+
+          if (!isStillInForm) {
+            isFormActive = false;
+            startAutoRotate();
+          }
+        }, 500);
+      });
+    }
+  }
+
+  // Initialize
+  detectFormInteraction();
+  startAutoRotate();
 }
 
 // 10. ENHANCED HOVER EFFECTS
@@ -1373,54 +1936,52 @@ const rippleCSS = `
 const style = document.createElement("style");
 style.textContent = rippleCSS;
 document.head.appendChild(style);
-
 // ===== WHATSAPP ENHANCED FUNCTIONALITY =====
 
 // Función para obtener datos del formulario inteligente
 function getFormData() {
-  // Primero intentar obtener datos guardados de sessionStorage (después del envío)
+  // Primero intentar obtener datos guardados de sessionStorage
+  let formData = {};
   try {
     const savedData = sessionStorage.getItem("whatsappFormData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      console.log("Datos recuperados de sessionStorage:", parsedData);
-
-      // Limpiar datos vacíos
-      Object.keys(parsedData).forEach((key) => {
-        if (!parsedData[key] || parsedData[key].trim() === "") {
-          delete parsedData[key];
-        }
-      });
-
-      if (Object.keys(parsedData).length > 0) {
-        console.log(
-          "Datos capturados del formulario (sessionStorage):",
-          parsedData
-        );
-        return parsedData;
-      }
+      formData = { ...parsedData };
     }
   } catch (e) {
-    console.log("Error al leer sessionStorage:", e);
+    // Error silencioso
   }
 
-  // Si no hay datos guardados, buscar en el formulario actual
+  // Buscar datos actuales en el formulario (todos los pasos)
   const form = document.getElementById("leadForm");
-  if (!form) return {};
+  if (form) {
+    // Obtener TODOS los inputs, selects y textareas del formulario (incluso los no visibles)
+    const inputs = form.querySelectorAll("input, select, textarea");
 
-  const formData = {};
+    inputs.forEach((input, index) => {
+      const value = input.value ? input.value.trim() : "";
 
-  // Obtener todos los inputs, selects y textareas del formulario
-  const inputs = form.querySelectorAll("input, select, textarea");
+      if (input.id && value !== "") {
+        formData[input.id] = value;
+      }
+    });
+  }
 
-  inputs.forEach((input) => {
-    if (input.id && input.value && input.value.trim() !== "") {
-      formData[input.id] = input.value.trim();
+  // Limpiar datos vacíos
+  Object.keys(formData).forEach((key) => {
+    if (!formData[key] || formData[key].trim() === "") {
+      delete formData[key];
     }
   });
 
-  // Debug: mostrar datos capturados en consola
-  console.log("Datos capturados del formulario (inputs actuales):", formData);
+  // Guardar en sessionStorage para persistencia
+  if (Object.keys(formData).length > 0) {
+    try {
+      sessionStorage.setItem("whatsappFormData", JSON.stringify(formData));
+    } catch (e) {
+      // Error silencioso
+    }
+  }
 
   return formData;
 }
@@ -1430,10 +1991,8 @@ function generateWhatsAppMessage() {
   const formData = getFormData();
   const hasFormData = Object.keys(formData).length > 0;
 
-  console.log("Generando mensaje WhatsApp con datos:", formData);
-
   let message =
-    "¡Hola! Me interesa agendar una evaluación gratuita en Nurse Glow Up.";
+    "¡Hola! Me interesa el servicio de detailing premium a domicilio de Alexis Detailing.";
 
   if (hasFormData) {
     message += "\n\n📋 *Mis datos:*";
@@ -1444,20 +2003,20 @@ function generateWhatsAppMessage() {
 
     if (formData.servicio) {
       const servicios = {
-        mesoterapia: "Mesoterapia",
-        prp: "Plasma Rico en Plaquetas (PRP)",
-        lipolaser: "Lipoláser",
-        radiofrecuencia: "Radiofrecuencia",
-        cavitacion: "Cavitación",
-        vacumterapia: "Vacumterapia",
+        "lavado-premium": "Lavado Premium ($35.000)",
+        "sellado-ceramico": "Sellado Cerámico ($85.000)",
+        "correccion-pintura": "Corrección de Pintura ($120.000)",
+        "detailing-completo": "Detailing Completo",
+        mantenimiento: "Mantenimiento Mensual",
+        evaluacion: "Evaluación Gratuita",
       };
       const servicioNombre = servicios[formData.servicio] || formData.servicio;
-      message += `\n💉 *Tratamiento de interés:* ${servicioNombre}`;
+      message += `\n🚗 *Servicio de interés:* ${servicioNombre}`;
     }
 
     if (formData.horario) {
       const horarios = {
-        manana: "Mañana (9:00 - 12:00)",
+        manana: "Mañana (9:00 - 13:00)",
         tarde: "Tarde (14:00 - 18:00)",
         flexible: "Horario flexible",
       };
@@ -1465,17 +2024,21 @@ function generateWhatsAppMessage() {
       message += `\n⏰ *Horario preferido:* ${horarioNombre}`;
     }
 
+    if (formData.comuna) {
+      message += `\n📍 *Comuna:* ${formData.comuna}`;
+    }
+
     if (formData.mensaje) {
       message += `\n💬 *Mensaje adicional:* ${formData.mensaje}`;
     }
 
-    message += "\n\n¿Podrían ayudarme a coordinar mi cita? ¡Gracias! 😊";
+    message +=
+      "\n\n¿Podrían ayudarme a coordinar el servicio a domicilio? ¡Gracias! 🚗✨";
   } else {
     message +=
-      "\n\n¿Podrían darme más información sobre sus tratamientos y disponibilidad? ¡Gracias! 😊";
+      "\n\n¿Podrían darme más información sobre sus servicios de detailing y disponibilidad? ¡Gracias! 🚗✨";
   }
 
-  console.log("Mensaje generado:", message);
   return message;
 }
 
@@ -1485,20 +2048,14 @@ function sendWhatsAppMessage(event) {
     event.preventDefault();
   }
 
-  console.log("=== ENVIANDO WHATSAPP ===");
-
   // Obtener datos del formulario
   const formData = getFormData();
-  console.log("Datos del formulario:", formData);
 
   // Generar mensaje
   const message = generateWhatsAppMessage();
-  console.log("Mensaje final:", message);
 
   const encodedMessage = encodeURIComponent(message);
-  const whatsappURL = `https://wa.me/56975730668?text=${encodedMessage}`;
-
-  console.log("URL de WhatsApp:", whatsappURL);
+  const whatsappURL = `https://wa.me/56975129990?text=${encodedMessage}`;
 
   // Tracking GTM mejorado
   gtmTrack("click_whatsapp_enhanced", {
@@ -1510,34 +2067,17 @@ function sendWhatsAppMessage(event) {
     timestamp: new Date().toISOString(),
   });
 
-  // Mostrar preview del mensaje antes de enviar (para debug)
-  if (Object.keys(formData).length > 0) {
-    console.log("✅ Datos encontrados - enviando mensaje personalizado");
-  } else {
-    console.log("⚠️ No se encontraron datos - enviando mensaje genérico");
-  }
-
   // Abrir WhatsApp
-  console.log("📱 Abriendo WhatsApp con URL:", whatsappURL);
-  try {
-    window.open(whatsappURL, "_blank");
-    console.log("✅ WhatsApp abierto exitosamente");
-  } catch (error) {
-    console.error("❌ Error al abrir WhatsApp:", error);
-  }
+  window.open(whatsappURL, "_blank");
 
   // Limpiar datos de sessionStorage después del envío
   setTimeout(() => {
     sessionStorage.removeItem("whatsappFormData");
-    console.log("Datos de WhatsApp limpiados de sessionStorage");
   }, 1000);
 
   // Resetear formulario después de 3 segundos
   setTimeout(() => {
     clearFormData();
-    console.log(
-      "✅ Formulario reseteado automáticamente después de abrir WhatsApp"
-    );
 
     // Tracking del reset automático
     gtmTrack("form_auto_reset", {
@@ -1673,26 +2213,8 @@ document.head.appendChild(tooltipStyle);
 
 // Event listeners para monitorear cambios en el formulario
 document.addEventListener("DOMContentLoaded", function () {
-  // Debug inicial
-  console.log("DOM cargado - inicializando WhatsApp functionality");
-
   // Verificar que el formulario existe
   const form = document.getElementById("leadForm");
-  console.log("Formulario encontrado:", !!form);
-
-  if (form) {
-    const allInputs = form.querySelectorAll("input, select, textarea");
-    console.log("Total de inputs en el formulario:", allInputs.length);
-
-    allInputs.forEach((input, index) => {
-      console.log(`Input ${index + 1}:`, {
-        id: input.id,
-        name: input.name,
-        type: input.type || input.tagName,
-        placeholder: input.placeholder,
-      });
-    });
-  }
 
   // Monitorear cambios en inputs del formulario
   const formInputs = document.querySelectorAll(
@@ -1700,8 +2222,22 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   formInputs.forEach((input) => {
-    input.addEventListener("input", updateWhatsAppButtonState);
-    input.addEventListener("change", updateWhatsAppButtonState);
+    // Actualizar estado del botón WhatsApp
+    input.addEventListener("input", () => {
+      updateWhatsAppButtonState();
+      // Guardar datos en tiempo real
+      setTimeout(() => {
+        getFormData();
+      }, 100);
+    });
+
+    input.addEventListener("change", () => {
+      updateWhatsAppButtonState();
+      // Guardar datos en tiempo real
+      setTimeout(() => {
+        getFormData();
+      }, 100);
+    });
   });
 
   // Mostrar tooltip contextual después de cierto tiempo
@@ -1709,7 +2245,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const completion = calculateFormCompletion();
     if (completion === 0) {
       showWhatsAppTooltip(
-        "¡Completa el formulario para un mensaje más personalizado!"
+        "¡Completa el formulario para cotizar tu servicio de detailing!"
       );
     }
   }, 30000); // 30 segundos
@@ -1719,38 +2255,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Ejecutar prueba automática después de 2 segundos
   setTimeout(() => {
-    console.log("=== PRUEBA AUTOMÁTICA INICIAL ===");
     testFormDataCapture();
   }, 2000);
 });
 
 // Función de prueba para verificar captura de datos
 function testFormDataCapture() {
-  console.log("=== PRUEBA DE CAPTURA DE DATOS ===");
-
   // Mostrar todos los inputs del formulario
   const form = document.getElementById("leadForm");
-  if (form) {
-    const inputs = form.querySelectorAll("input, select, textarea");
-    console.log("Inputs encontrados:", inputs.length);
-
-    inputs.forEach((input, index) => {
-      console.log(`Input ${index + 1}:`, {
-        id: input.id,
-        type: input.type || input.tagName,
-        value: input.value,
-        visible: input.offsetParent !== null,
-      });
-    });
-  }
 
   // Probar captura de datos
   const formData = getFormData();
-  console.log("Datos capturados:", formData);
 
   // Generar mensaje de prueba
   const message = generateWhatsAppMessage();
-  console.log("Mensaje generado:", message);
 
   return {
     formData,
@@ -1763,8 +2281,6 @@ function testFormDataCapture() {
 
 // Función para llenar formulario con datos de prueba
 function fillTestData() {
-  console.log("=== LLENANDO DATOS DE PRUEBA ===");
-
   const testData = {
     nombre: "María José González",
     servicio: "mesoterapia",
@@ -1776,13 +2292,10 @@ function fillTestData() {
     const field = document.getElementById(fieldId);
     if (field) {
       field.value = testData[fieldId];
-      console.log(`✅ Campo ${fieldId} llenado con: ${testData[fieldId]}`);
 
       // Disparar eventos para que se actualice el estado
       field.dispatchEvent(new Event("input", { bubbles: true }));
       field.dispatchEvent(new Event("change", { bubbles: true }));
-    } else {
-      console.log(`❌ Campo ${fieldId} no encontrado`);
     }
   });
 
@@ -1791,15 +2304,12 @@ function fillTestData() {
 
   // Verificar datos después de llenar
   setTimeout(() => {
-    console.log("=== VERIFICANDO DATOS DESPUÉS DE LLENAR ===");
     testFormDataCapture();
   }, 500);
 }
 
 // Función para limpiar formulario
 function clearFormData() {
-  console.log("=== LIMPIANDO FORMULARIO ===");
-
   const form = document.getElementById("leadForm");
   if (form) {
     const inputs = form.querySelectorAll("input, select, textarea");
@@ -1810,9 +2320,43 @@ function clearFormData() {
         input.dispatchEvent(new Event("change", { bubbles: true }));
       }
     });
-    console.log("Formulario limpiado");
+
+    // Limpiar todo el storage relacionado al formulario
+    clearFormStorage();
+
+    // Resetear formulario multi-step al paso 1
+    currentStep = 1;
+    const steps = form.querySelectorAll(".step");
+    steps.forEach((step, index) => {
+      if (index === 0) {
+        step.classList.add("active");
+      } else {
+        step.classList.remove("active");
+      }
+    });
+
+    // Resetear barra de progreso
+    const progressBar = document.getElementById("progressBar");
+    if (progressBar) {
+      progressBar.style.width = "25%";
+    }
+
     updateWhatsAppButtonState();
   }
+}
+
+// Función para debug: mostrar estado actual del formulario
+function debugFormState() {
+  const formData = getFormData();
+  const completion = calculateFormCompletion();
+  const message = generateWhatsAppMessage();
+
+  return {
+    currentStep,
+    formData,
+    completion,
+    message,
+  };
 }
 
 // ===== GALLERY FUNCTIONALITY =====
@@ -1951,12 +2495,76 @@ function initInstagramTracking() {
   });
 }
 
+// MOBILE MENU AUTO-CLOSE WITH FADE EFFECT
+function closeMobileMenuWithFade(mobileMenu) {
+  // Agregar clase de cierre para activar animación
+  mobileMenu.classList.add("closing");
+
+  // Esperar a que termine la animación antes de cerrar
+  setTimeout(() => {
+    mobileMenu.close();
+    mobileMenu.classList.remove("closing");
+  }, 300); // 300ms coincide con la duración de la transición CSS
+}
+
+function initMobileMenuAutoClose() {
+  const mobileMenuLinks = document.querySelectorAll(".mobile-menu-link");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const closeButton = document.querySelector(
+    '[commandfor="mobile-menu"][command="close"]'
+  );
+
+  // Auto-close cuando se hace clic en enlaces
+  mobileMenuLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      // Efecto visual de click
+      this.classList.add("clicked");
+
+      // Vibración táctil en dispositivos móviles
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+
+      // Remover el efecto después de la animación
+      setTimeout(() => {
+        this.classList.remove("clicked");
+      }, 200);
+
+      // Cerrar el menú móvil con fade (con un pequeño delay para ver el efecto)
+      if (mobileMenu) {
+        setTimeout(() => {
+          closeMobileMenuWithFade(mobileMenu);
+        }, 150);
+      }
+
+      // Track del click en menú móvil
+      gtmTrack("mobile_menu_click", {
+        link_text: this.textContent.trim(),
+        link_href: this.getAttribute("href"),
+        timestamp: new Date().toISOString(),
+      });
+    });
+  });
+
+  // Aplicar fade también al botón de cerrar
+  if (closeButton && mobileMenu) {
+    closeButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      closeMobileMenuWithFade(mobileMenu);
+    });
+  }
+}
+
 // Inicializar funcionalidades de reels
 document.addEventListener("DOMContentLoaded", function () {
+  setRandomHeroWallpaper();
   initReelsInteractions();
   initReelsAnimation();
   initInstagramTracking();
-  showWhatsAppTooltip("¡Hola! ¿En qué puedo ayudarte?");
+  initMobileMenuAutoClose();
+  showWhatsAppTooltip(
+    "¡Hola! ¿Te interesa nuestro detailing premium a domicilio?"
+  );
 });
 
 // Función global para usar desde otros lugares
@@ -1964,3 +2572,5 @@ window.sendWhatsAppMessage = sendWhatsAppMessage;
 window.testFormDataCapture = testFormDataCapture;
 window.fillTestData = fillTestData;
 window.clearFormData = clearFormData;
+window.debugFormState = debugFormState;
+window.getFormData = getFormData;

@@ -5,49 +5,19 @@
       "@type": "LocalBusiness",
       "@id": "https://alexisdetailing.cl/#localbusiness",
       "name": "Alexis Detailing",
-      "alternateName": "Alexis Detailing Santiago - Car Detailing a Domicilio",
-      "description": "Servicio de car detailing premium a domicilio en Santiago. Lavado, pulido, sellado cerámico, corrección de pintura y detallado interior con productos profesionales.",
+      "alternateName": "Car Detailing a Domicilio Santiago",
+      "description": "Servicio de detailing premium a domicilio en Santiago. Lavado, pulido, sellado cerámico y corrección de pintura con productos profesionales. Garantía 6 meses.",
       "url": "https://alexisdetailing.cl",
       "telephone": "+56975129990",
       "email": "contacto@alexisdetailing.cl",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Servicio a domicilio",
+        "streetAddress": "Servicio a domicilio en toda la Región Metropolitana",
         "addressLocality": "Santiago",
         "addressRegion": "Región Metropolitana",
-        "postalCode": "8320000",
+        "postalCode": "7500000",
         "addressCountry": "CL"
       },
-      "areaServed": [
-        {
-          "@type": "City",
-          "name": "Santiago"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Las Condes"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Providencia"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Vitacura"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Ñuñoa"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "La Reina"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Lo Barnechea"
-        }
-      ],
       "geo": {
         "@type": "GeoCoordinates",
         "latitude": -33.4372,
@@ -58,26 +28,26 @@
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
           "opens": "09:00",
-          "closes": "18:00"
+          "closes": "19:00"
         },
         {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": "Saturday",
           "opens": "09:00",
-          "closes": "15:00"
+          "closes": "14:00"
         }
       ],
-      "priceRange": "$$",
+      "priceRange": "$35.000 - $120.000",
       "currenciesAccepted": "CLP",
-      "paymentAccepted": "Cash, Credit Card, Debit Card, Bank Transfer",
+      "paymentAccepted": "Cash, Credit Card, Debit Card, Bank Transfer, WhatsApp Payment",
       "image": [
-        "https://alexisdetailing.cl/images/auto-detailing-exterior.jpg",
-        "https://alexisdetailing.cl/images/auto-detailing-interior.jpg",
-        "https://alexisdetailing.cl/images/sellado-ceramico.jpg"
+        "https://alexisdetailing.cl/images/lavado-premium.jpg",
+        "https://alexisdetailing.cl/images/sellado-ceramico.jpg",
+        "https://alexisdetailing.cl/images/correccion-pintura.jpg"
       ],
       "logo": {
         "@type": "ImageObject",
-        "url": "https://alexisdetailing.cl/logo.png",
+        "url": "https://alexisdetailing.cl/images/Logo.webp",
         "width": 300,
         "height": 100
       },
@@ -85,7 +55,7 @@
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
-        "reviewCount": "85",
+        "reviewCount": "200",
         "bestRating": "5",
         "worstRating": "1"
       },
@@ -94,74 +64,76 @@
           "@type": "Review",
           "author": {
             "@type": "Person",
-            "name": "Carlos R."
+            "name": "Carlos M."
           },
           "reviewRating": {
             "@type": "Rating",
             "ratingValue": "5",
             "bestRating": "5"
           },
-          "reviewBody": "Increíble servicio, dejaron mi auto como nuevo. El sellado cerámico quedó perfecto y el brillo es espectacular.",
-          "datePublished": "2025-01-15"
+          "reviewBody": "Excelente servicio! Vinieron a mi casa y dejaron el auto como nuevo. El lavado premium por $35.000 vale cada peso. Muy profesionales y puntuales.",
+          "datePublished": "2024-09-15"
         },
         {
           "@type": "Review",
           "author": {
             "@type": "Person",
-            "name": "María F."
+            "name": "Patricia L."
           },
           "reviewRating": {
             "@type": "Rating",
             "ratingValue": "5",
             "bestRating": "5"
           },
-          "reviewBody": "La corrección de pintura superó mis expectativas. Eliminaron todos los rayones y ahora parece auto de concesionario.",
-          "datePublished": "2025-01-20"
+          "reviewBody": "Increíble el sellado cerámico! Mi auto quedó con un brillo espectacular y se nota la protección. Pagué $85.000 y fue la mejor inversión.",
+          "datePublished": "2024-09-20"
+        },
+        {
+          "@type": "Review",
+          "author": {
+            "@type": "Person",
+            "name": "Roberto S."
+          },
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5"
+          },
+          "reviewBody": "Tenía rayones por todos lados y ahora parece auto 0km. La corrección de pintura transformó completamente mi vehículo. Vale cada peso de los $120.000.",
+          "datePublished": "2024-09-18"
         }
       ],
-      "serviceType": [
-        "Car Detailing",
-        "Auto Detailing",
-        "Car Wash",
-        "Paint Correction",
-        "Ceramic Coating"
-      ],
+      "serviceType": "Car Detailing Service",
       "availableService": [
         {
           "@type": "Service",
           "name": "Lavado Premium",
-          "description": "Lavado detallado exterior e interior con productos profesionales",
-          "serviceType": "Car Wash"
+          "description": "Lavado exterior completo, limpieza interior detallada, encerado y brillo, llantas y neumáticos",
+          "offers": {
+            "@type": "Offer",
+            "price": "35000",
+            "priceCurrency": "CLP"
+          }
         },
         {
           "@type": "Service",
           "name": "Sellado Cerámico",
-          "description": "Protección avanzada con capa cerámica duradera",
-          "serviceType": "Ceramic Coating"
+          "description": "Lavado premium incluido, descontaminación química, aplicación sellado cerámico, protección 6 meses",
+          "offers": {
+            "@type": "Offer",
+            "price": "85000",
+            "priceCurrency": "CLP"
+          }
         },
         {
           "@type": "Service",
           "name": "Corrección de Pintura",
-          "description": "Eliminación de rayones e imperfecciones en 2-3 etapas",
-          "serviceType": "Paint Correction"
-        },
-        {
-          "@type": "Service",
-          "name": "Detallado Interior Completo",
-          "description": "Limpieza profunda de tapicería, cuero y superficies interiores",
-          "serviceType": "Interior Detailing"
-        },
-        {
-          "@type": "Service",
-          "name": "Descontaminación Clay Bar",
-          "description": "Eliminación de contaminantes adheridos a la pintura",
-          "serviceType": "Paint Decontamination"
-        },
-        {
-          "@type": "Service",
-          "name": "Restauración de Faros",
-          "description": "Eliminación de opacidad y amarillamiento de faros",
-          "serviceType": "Headlight Restoration"
+          "description": "Pulido profesional 2 etapas, eliminación rayones y swirls, sellado cerámico incluido, restauración completa",
+          "offers": {
+            "@type": "Offer",
+            "price": "120000",
+            "priceCurrency": "CLP"
+          }
         }
       ],
       "hasOfferCatalog": {
@@ -172,8 +144,8 @@
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Descuento Primer Servicio",
-              "description": "15% de descuento en el primer servicio de detailing"
+              "name": "Descuento 15% OFF",
+              "description": "15% de descuento en primer servicio - Solo primeros 10 clientes"
             },
             "priceSpecification": {
               "@type": "PriceSpecification",
@@ -182,12 +154,12 @@
               "valueAddedTaxIncluded": true,
               "eligibleQuantity": {
                 "@type": "QuantitativeValue",
-                "value": 1
+                "value": 10
               }
             },
             "availability": "https://schema.org/LimitedAvailability",
-            "validFrom": "2025-01-01",
-            "validThrough": "2025-12-31"
+            "validFrom": "2024-09-26",
+            "validThrough": "2024-10-26"
           }
         ]
       }
@@ -198,26 +170,10 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué incluye el servicio a domicilio?",
+          "name": "¿Realmente van a domicilio?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Llevamos todos los equipos y productos necesarios. Solo necesitamos acceso a agua y electricidad. El servicio incluye lavado completo, aspirado y los tratamientos específicos que elijas."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cuánto tiempo toma cada servicio?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Depende del servicio: Lavado Premium (2-3 horas), Sellado Cerámico (4-6 horas), Corrección de Pintura (6-8 horas). Te confirmamos el tiempo exacto al agendar."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿En qué comunas trabajan?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Atendemos principalmente Las Condes, Providencia, Vitacura, Ñuñoa, La Reina, Lo Barnechea y Santiago Centro. Para otras comunas, consulta disponibilidad por WhatsApp."
+            "text": "¡Absolutamente! Nuestro servicio es 100% a domicilio. Vamos donde estés en Santiago y alrededores con todo nuestro equipo profesional. Solo necesitas agua y electricidad."
           }
         },
         {
@@ -225,68 +181,26 @@
           "name": "¿Qué productos utilizan?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Trabajamos con marcas premium como Meguiar's, Chemical Guys, Sonax, 3M, Koch Chemie, CarPro y Gyeon. Todos productos profesionales de alta calidad."
+            "text": "Trabajamos exclusivamente con marcas profesionales de primera línea: Meguiar's, Chemical Guys, Sonax, Gtechniq y P&S Detail Products. Todos nuestros productos son 100% originales y están respaldados por la garantía del fabricante."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Ofrecen garantía en sus servicios?",
+          "name": "¿Cómo debo preparar mi auto?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sí, todos nuestros servicios tienen garantía. El sellado cerámico tiene garantía de 6 meses y la corrección de pintura 3 meses contra defectos de aplicación."
+            "text": "La preparación es mínima: retira objetos personales del interior, asegúrate de tener acceso a agua y electricidad, y si es posible, ubica el vehículo en un lugar con sombra."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuándo veré los resultados?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Los resultados del detailing son inmediatos y visibles. Tu auto quedará como nuevo al finalizar el servicio. El sellado cerámico proporciona protección duradera por 6 meses."
           }
         }
       ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://alexisdetailing.cl/#website",
-      "url": "https://alexisdetailing.cl",
-      "name": "Alexis Detailing Santiago",
-      "description": "Car detailing premium a domicilio en Santiago de Chile",
-      "publisher": {
-        "@id": "https://alexisdetailing.cl/#localbusiness"
-      },
-      "potentialAction": [
-        {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://alexisdetailing.cl/buscar?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
-        }
-      ]
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://alexisdetailing.cl/#organization",
-      "name": "Alexis Detailing",
-      "url": "https://alexisdetailing.cl",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://alexisdetailing.cl/logo.png",
-        "width": 300,
-        "height": 100
-      },
-      "contactPoint": [
-        {
-          "@type": "ContactPoint",
-          "telephone": "+56975129990",
-          "contactType": "customer service",
-          "availableLanguage": "Spanish",
-          "areaServed": "CL"
-        },
-        {
-          "@type": "ContactPoint",
-          "telephone": "+56975129990",
-          "contactType": "customer service",
-          "availableLanguage": "Spanish",
-          "areaServed": "CL",
-          "contactOption": "WhatsApp"
-        }
-      ],
-      "sameAs": ["https://www.instagram.com/alexis_detailing"]
     }
   ]
 }

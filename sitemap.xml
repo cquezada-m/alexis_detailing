@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Página Principal -->
+  <url>
+    <loc>https://alexisdetailing.cl/</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://alexisdetailing.cl/images/alexis-logo.png</image:loc>
+      <image:title>Alexis Detailing - Servicio Premium a Domicilio Santiago</image:title>
+      <image:caption>Detailing profesional a domicilio en Santiago. Lavado, sellado cerámico y corrección de pintura.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Servicios Principales -->
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/lavado-premium-domicilio</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/sellado-ceramico-santiago</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/correccion-pintura-profesional</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/detailing-completo-vehiculos</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Servicios Combinados -->
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/lavado-sellado-ceramico-combo</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/correccion-sellado-premium</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/detailing-interior-exterior</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/servicios/mantenimiento-mensual-vehiculos</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog Articles (Future) -->
+  <url>
+    <loc>https://alexisdetailing.cl/blog/detailing-premium-santiago-beneficios</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/blog/sellado-ceramico-vehiculos-chile</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/blog/correccion-pintura-santiago-resultados</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Páginas Informativas -->
+  <url>
+    <loc>https://alexisdetailing.cl/contacto</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/cobertura-santiago</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/preguntas-frecuentes</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Landing Pages Específicas -->
+  <url>
+    <loc>https://alexisdetailing.cl/detailing-premium-domicilio</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/evaluacion-gratuita-vehiculo</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://alexisdetailing.cl/resultados-primera-sesion</loc>
+    <lastmod>2025-09-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
