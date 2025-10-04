@@ -1891,7 +1891,6 @@ section.brands-section {
     height: 60px;
     padding: var(--spacing-xs);
   }
-
   @keyframes brandScroll {
     0% {
       transform: translateX(0);
@@ -1899,6 +1898,130 @@ section.brands-section {
     100% {
       transform: translateX(calc(-120px * 9 - var(--spacing-sm) * 9));
     }
+  }
+}
+
+/* Sponsors Section - FONDO NEGRO */
+section.sponsors-section {
+  padding: var(--spacing-3xl) 0;
+  background: #000000 !important;
+  position: relative;
+}
+
+.sponsors-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(
+      circle at 50% 30%,
+      rgba(220, 38, 38, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 70%,
+      rgba(220, 38, 38, 0.03) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+}
+
+.sponsor-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.sponsor-logo-container {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  transition: var(--transition-normal);
+}
+
+.sponsor-logo-container:hover {
+  transform: translateY(-8px);
+}
+
+.sponsor-logo {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3));
+  transition: var(--transition-normal);
+}
+
+.sponsor-logo:hover {
+  transform: scale(1.05);
+}
+
+.sponsor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.sponsor-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sponsor-description {
+  font-size: 1.25rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-lg) 0;
+  max-width: 600px;
+}
+
+.sponsor-cta {
+  font-size: 1.125rem;
+  padding: var(--spacing-md) var(--spacing-xl);
+  min-width: 200px;
+}
+
+/* Sponsors Responsive */
+@media (max-width: 768px) {
+  .sponsor-logo-container {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+  }
+
+  .sponsor-logo {
+    max-width: 250px;
+  }
+
+  .sponsor-title {
+    font-size: 2rem;
+  }
+
+  .sponsor-description {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sponsor-logo {
+    max-width: 200px;
+  }
+
+  .sponsor-title {
+    font-size: 1.75rem;
+  }
+
+  .sponsor-description {
+    font-size: 1rem;
   }
 }
 
