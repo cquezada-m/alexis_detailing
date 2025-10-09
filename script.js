@@ -2574,3 +2574,61 @@ window.fillTestData = fillTestData;
 window.clearFormData = clearFormData;
 window.debugFormState = debugFormState;
 window.getFormData = getFormData;
+
+// Función para cerrar la cinta superior
+function closeBanner() {
+  const banner = document.querySelector('.top-banner');
+  
+  if (banner) {
+    // Agregar clase hidden para animación
+    banner.classList.add('hidden');
+    
+    // Tracking del evento
+    gtmTrack('banner_closed', {
+      banner_type: 'autonomous_service',
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Guardar en localStorage que el usuario cerró la cinta
+    try {
+      localStorage.setItem('alexisDetailing_bannerClosed', 'true');
+      localStorage.setItem('alexisDetailing_bannerClosedTime', Date.now().toString());
+    } catch (e) {
+      // Silently fail if localStorage is not available
+    }
+  }
+}
+
+// Verificar si la cinta debe mostrarse al cargar la página
+function checkBannerVisibility() {
+  try {
+    const bannerClosed = localStorage.getItem('alexisDetailing_bannerClosed');
+    const closedTime = localStorage.getItem('alexisDetailing_bannerClosedTime');
+    
+    if (bannerClosed === 'true' && closedTime) {
+      const timeElapsed = Date.now() - parseInt(closedTime);
+      const oneDayInMs = 24 * 60 * 60 * 1000; // 24 horas
+      
+      // Si han pasado menos de 24 horas, mantener la cinta oculta
+      if (timeElapsed < oneDayInMs) {
+        const banner = document.querySelector('.top-banner');
+        
+        if (banner) {
+          banner.classList.add('hidden');
+        }
+      } else {
+        // Si han pasado más de 24 horas, limpiar el localStorage
+        localStorage.removeItem('alexisDetailing_bannerClosed');
+        localStorage.removeItem('alexisDetailing_bannerClosedTime');
+      }
+    }
+  } catch (e) {
+    // Silently fail if localStorage is not available
+  }
+}
+
+// Hacer la función closeBanner global
+window.closeBanner = closeBanner;
+
+// Verificar visibilidad de la cinta al cargar la página
+document.addEventListener('DOMContentLoaded', checkBannerVisibility);

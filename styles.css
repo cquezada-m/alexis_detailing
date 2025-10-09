@@ -4,16 +4,16 @@
 @import url("https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css");
 
 :root {
-  /* Paleta Alexis Detailing - Rojo/Negro Premium Actualizada */
-  --primary-color: #dc2626; /* Rojo intenso - más profesional */
-  --primary-light: #ef4444;
-  --primary-dark: #991b1b;
-  --secondary-color: #f59e0b; /* Amber - complemento cálido */
-  --secondary-light: #fbbf24;
-  --secondary-dark: #d97706;
-  --accent-color: #dc2626; /* Rojo accent principal */
-  --accent-light: #ef4444;
-  --accent-dark: #991b1b;
+  /* Paleta Alexis Detailing - Dorado/Negro Premium */
+  --primary-color: #d4af37; /* Dorado clásico */
+  --primary-light: #f0c75e; /* Dorado claro */
+  --primary-dark: #b8860b; /* Dorado oscuro */
+  --secondary-color: #d4af37; /* Dorado como color secundario también */
+  --secondary-light: #f0c75e;
+  --secondary-dark: #b8860b;
+  --accent-color: #d4af37; /* Dorado como acento */
+  --accent-light: #f0c75e;
+  --accent-dark: #b8860b;
 
   /* Neutros Detailing - Mejorado contraste */
   --text-dark: #ffffff; /* Blanco puro */
@@ -29,21 +29,21 @@
   --bg-light: #0a0a0a; /* Negro muy sutil */
 
   /* Bordes Refinados - Para fondo negro */
-  --border-light: #374151; /* Gris oscuro sutil */
-  --border-medium: #4b5563; /* Gris medio */
-  --border-accent: rgba(220, 38, 38, 0.3); /* Rojo translúcido */
-  --border-glow: rgba(220, 38, 38, 0.5); /* Rojo brillante */
+  --border-light: #4a4a4a; /* Gris oscuro sutil ajustado */
+  --border-medium: #5a5a5a; /* Gris medio ajustado */
+  --border-accent: rgba(212, 175, 55, 0.4); /* Dorado translúcido */
+  --border-glow: rgba(212, 175, 55, 0.7); /* Dorado brillante */
 
-  /* Shadows - Premium para fondo negro */
-  --shadow-sm: 0 2px 4px 0 rgba(220, 38, 38, 0.1),
+  /* Shadows - Premium para fondo negro con dorado */
+  --shadow-sm: 0 2px 4px 0 rgba(212, 175, 55, 0.15),
     0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow: 0 4px 8px -1px rgba(220, 38, 38, 0.15),
+  --shadow: 0 4px 8px -1px rgba(212, 175, 55, 0.2),
     0 2px 4px -1px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 16px -3px rgba(220, 38, 38, 0.2),
+  --shadow-md: 0 8px 16px -3px rgba(212, 175, 55, 0.25),
     0 4px 8px -2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 32px -5px rgba(220, 38, 38, 0.25),
+  --shadow-lg: 0 16px 32px -5px rgba(212, 175, 55, 0.3),
     0 8px 16px -5px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 24px 48px -12px rgba(220, 38, 38, 0.3),
+  --shadow-xl: 0 24px 48px -12px rgba(212, 175, 55, 0.35),
     0 12px 24px -6px rgba(0, 0, 0, 0.7);
 
   /* Sistema de Gradientes Consecutivos - Flujo de Página - v2.1 ACTUALIZADO */
@@ -72,12 +72,12 @@
   --section-color-7: var(--bg-primary); /* #000000 - Contact */
   --section-color-8: var(--bg-accent); /* #1a1a1a - Footer */
 
-  /* Gradientes Detailing - Rojo Premium Actualizados */
+  /* Gradientes Detailing - Dorado Premium Actualizados */
   --gradient-primary: linear-gradient(
     135deg,
     var(--primary-color) 0%,
     var(--primary-dark) 70%,
-    #7f1d1d 100%
+    #8b7500 100%
   );
   --gradient-secondary: linear-gradient(
     135deg,
@@ -88,7 +88,7 @@
     135deg,
     var(--accent-color) 0%,
     var(--accent-dark) 70%,
-    #450a0a 100%
+    #5c4a00 100%
   );
   --gradient-hero: linear-gradient(
     to bottom,
@@ -135,6 +135,7 @@
   );
 
   /* Spacing System - Modernizado */
+  --spacing-xxs: 0.25rem; /* 4px - más generoso */
   --spacing-xs: 0.75rem; /* 12px - más generoso */
   --spacing-sm: 1.25rem; /* 20px - mejor respiración */
   --spacing-md: 2rem; /* 32px - más espacioso */
@@ -180,6 +181,185 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Top Banner - Cinta Dorada con Scroll Infinito y Gradiente Animado */
+.top-banner {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(
+    270deg,
+    var(--primary-color) 0%,
+    var(--primary-light) 15%,
+    #f4d03f 30%,
+    var(--primary-color) 45%,
+    var(--primary-dark) 60%,
+    #b8860b 75%,
+    var(--primary-light) 90%,
+    var(--primary-color) 100%
+  );
+  background-size: 600% 100%;
+  animation: gradient-shift 12s ease-in-out infinite;
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: var(--spacing-xxs) 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-banner.hidden {
+  transform: translateY(-100%);
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.banner-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  animation: scroll-horizontal 20s linear infinite;
+  white-space: nowrap;
+}
+
+/* Crear múltiples copias del contenido para scroll infinito */
+.banner-content::after {
+  content: "SERVICIO 100% AUTÓNOMO - Llevamos todo lo necesario para el detailing perfecto • PRODUCTOS PREMIUM - Equipos profesionales incluidos";
+  margin-left: var(--spacing-3xl);
+  color: #000000;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.banner-icon {
+  color: #000000;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.banner-text {
+  color: #000000;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.banner-text strong {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.banner-close {
+  position: absolute;
+  top: 50%;
+  right: var(--spacing-md);
+  transform: translateY(-50%);
+  color: #000000;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.banner-close:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Animación de scroll horizontal infinito */
+@keyframes scroll-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Animación del gradiente de fondo */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  20% {
+    background-position: 100% 50%;
+  }
+  40% {
+    background-position: 200% 50%;
+  }
+  60% {
+    background-position: 300% 50%;
+  }
+  80% {
+    background-position: 400% 50%;
+  }
+  100% {
+    background-position: 500% 50%;
+  }
+}
+
+/* Pausar animaciones al hacer hover */
+.top-banner:hover .banner-content {
+  animation-play-state: paused;
+}
+
+.top-banner:hover {
+  animation-play-state: paused;
+}
+
+/* Responsive para banner */
+@media (max-width: 768px) {
+  .top-banner {
+    padding: var(--spacing-xs) 0;
+  }
+
+  .banner-content {
+    gap: var(--spacing-md);
+    animation-duration: 25s; /* Más lento en móvil */
+  }
+
+  .banner-text {
+    font-size: 0.8rem;
+  }
+
+  .banner-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .banner-close {
+    right: var(--spacing-sm);
+    padding: 6px;
+  }
+
+  .banner-content::after {
+    content: "🚗 SERVICIO 100% AUTÓNOMO • 🛠️ PRODUCTOS PREMIUM • ⭐ GARANTÍA 6 MESES • 📍 A DOMICILIO • ";
+    margin-left: var(--spacing-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-text {
+    font-size: 0.75rem;
+  }
+
+  .banner-content {
+    animation-duration: 30s; /* Aún más lento en móvil pequeño */
+  }
+
+  .banner-content::after {
+    content: "🚗 100% AUTÓNOMO • 🛠️ PREMIUM • ⭐ GARANTÍA • 📍 A DOMICILIO • ";
+    margin-left: var(--spacing-xl);
+  }
 }
 
 /* Typography Hierarchy - Montserrat for Headings */
@@ -535,6 +715,7 @@ section:nth-child(odd) {
 
 .nav-menu a:hover {
   color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
 
 .nav-menu a::after {
@@ -670,7 +851,7 @@ p {
 .cta-primary:hover {
   transform: translateY(-3px) scale(1.03);
   background: var(--gradient-button-hover);
-  box-shadow: var(--shadow-xl), 0 0 30px rgba(220, 38, 38, 0.4);
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(212, 175, 55, 0.3);
   filter: brightness(1.15) saturate(1.1);
 }
 
@@ -1762,7 +1943,7 @@ section.brands-section {
 
 .brand-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
   border-color: var(--primary-color);
 }
 
@@ -1901,13 +2082,17 @@ section.brands-section {
   }
 }
 
-/* Sponsors Section - FONDO NEGRO */
+/* Sponsors Section - Diseño Panal Dorado Premium */
 section.sponsors-section {
-  padding: var(--spacing-3xl) 0;
-  background: #000000 !important;
+  padding: var(--spacing-4xl) 0;
   position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
+/* Patrón de panal dorado de fondo */
 .sponsors-section::before {
   content: "";
   position: absolute;
@@ -1915,107 +2100,279 @@ section.sponsors-section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(
-      circle at 50% 30%,
-      rgba(220, 38, 38, 0.05) 0%,
-      transparent 50%
+  background-image: 
+    /* Patrón hexagonal principal */ radial-gradient(
+      circle at 25% 25%,
+      var(--primary-color) 2px,
+      transparent 2px
     ),
     radial-gradient(
-      circle at 50% 70%,
-      rgba(220, 38, 38, 0.03) 0%,
-      transparent 50%
-    );
-  pointer-events: none;
+      circle at 75% 25%,
+      var(--primary-light) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(circle at 25% 75%, var(--primary-dark) 1px, transparent 1px),
+    radial-gradient(
+      circle at 75% 75%,
+      var(--primary-color) 1.5px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      var(--primary-light) 0.8px,
+      transparent 0.8px
+    ),
+    /* Hexágonos grandes */
+      conic-gradient(
+        from 0deg at 50% 50%,
+        transparent 0deg,
+        rgba(212, 175, 55, 0.1) 60deg,
+        transparent 120deg,
+        rgba(212, 175, 55, 0.05) 180deg,
+        transparent 240deg,
+        rgba(212, 175, 55, 0.08) 300deg,
+        transparent 360deg
+      );
+  background-size: 80px 80px, 120px 120px, 60px 60px, 100px 100px, 40px 40px,
+    200px 200px;
+  background-position: 0 0, 40px 40px, 20px 20px, 60px 60px, 10px 10px, 0 0;
+  opacity: 0.6;
+  animation: honeycomb-float 20s ease-in-out infinite;
 }
 
+/* Patrón hexagonal adicional */
+.sponsors-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    /* Hexágonos geométricos */ polygon(
+    50% 0%,
+    93.3% 25%,
+    93.3% 75%,
+    50% 100%,
+    6.7% 75%,
+    6.7% 25%
+  );
+  background: repeating-conic-gradient(
+    from 30deg at 50% 50%,
+    transparent 0deg 60deg,
+    rgba(212, 175, 55, 0.03) 60deg 120deg,
+    transparent 120deg 180deg,
+    rgba(212, 175, 55, 0.02) 180deg 240deg,
+    transparent 240deg 300deg,
+    rgba(212, 175, 55, 0.04) 300deg 360deg
+  );
+  background-size: 150px 150px;
+  opacity: 0.4;
+  animation: honeycomb-rotate 30s linear infinite;
+}
+
+/* Contenedor principal con efecto blur */
+.sponsors-section .container {
+  position: relative;
+  z-index: 10;
+}
+
+/* Contenido del patrocinador con efecto cristal */
 .sponsor-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   position: relative;
-  z-index: 2;
+  border-radius: 32px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Header de la sección */
+.sponsors-section .section-header {
+  text-align: center;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 5;
+}
+
+.sponsors-section .section-header h2 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-light) 50%,
+    var(--primary-color) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.02em;
+}
+
+.sponsors-section .section-header p {
+  font-size: 1.5rem;
+  color: var(--text-light);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* Logo del patrocinador */
 .sponsor-logo-container {
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-lg);
-  transition: var(--transition-normal);
-}
-
-.sponsor-logo-container:hover {
-  transform: translateY(-8px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .sponsor-logo {
   width: 100%;
-  max-width: 400px;
+  max-width: 550px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(220, 38, 38, 0.3));
-  transition: var(--transition-normal);
+  filter: drop-shadow(0 10px 20px rgba(212, 175, 55, 0.3));
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .sponsor-logo:hover {
-  transform: scale(1.05);
+  filter: drop-shadow(0 15px 30px rgba(212, 175, 55, 0.4)) brightness(1.1);
 }
 
+/* Información del patrocinador */
 .sponsor-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-}
-
-.sponsor-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  gap: var(--spacing-xl);
 }
 
 .sponsor-description {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   color: var(--text-light);
-  line-height: 1.6;
-  margin: 0 0 var(--spacing-lg) 0;
-  max-width: 600px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 700px;
+  font-weight: 300;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(10px);
 }
 
-.sponsor-cta {
-  font-size: 1.125rem;
-  padding: var(--spacing-md) var(--spacing-xl);
-  min-width: 200px;
+/* Botón CTA mejorado */
+.sponsor-info .cta-secondary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-dark) 100%
+  );
+  color: #000000;
+  padding: 1.2rem 3rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Sponsors Responsive */
+.sponsor-info .cta-secondary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    var(--primary-light) 0%,
+    var(--primary-color) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sponsor-info .cta-secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+}
+
+.sponsor-info .cta-secondary:hover::before {
+  opacity: 1;
+}
+
+.sponsor-info .cta-secondary span {
+  position: relative;
+  z-index: 2;
+}
+
+/* Animaciones */
+@keyframes honeycomb-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-10px) rotate(-1deg);
+  }
+}
+
+@keyframes honeycomb-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .sponsor-logo-container {
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-md);
+  .sponsors-section .section-header h2 {
+    font-size: 2.5rem;
   }
 
-  .sponsor-logo {
-    max-width: 250px;
-  }
-
-  .sponsor-title {
-    font-size: 2rem;
+  .sponsor-content {
+    padding: var(--spacing-2xl);
+    margin: 0 var(--spacing-md);
   }
 
   .sponsor-description {
-    font-size: 1.125rem;
+    font-size: 1.2rem;
+  }
+
+  .sponsor-info .cta-secondary {
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .sponsor-logo {
-    max-width: 200px;
+  .sponsors-section {
+    min-height: 80vh;
   }
 
+  .sponsors-section .section-header h2 {
+    font-size: 2rem;
+  }
+
+  .sponsor-content {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 480px) {
   .sponsor-title {
     font-size: 1.75rem;
   }
@@ -2417,7 +2774,7 @@ section.gallery {
 .reel-play-button:hover {
   background: var(--gradient-primary);
   transform: translate(-50%, -50%) scale(1.15);
-  box-shadow: var(--shadow-xl), 0 0 25px rgba(220, 38, 38, 0.4);
+  box-shadow: var(--shadow-xl), 0 0 25px rgba(212, 175, 55, 0.3);
   border-color: rgba(255, 255, 255, 0.6);
 }
 
@@ -2510,7 +2867,7 @@ section.gallery {
 
 .instagram-button:hover {
   transform: translateY(-3px) scale(1.03);
-  box-shadow: var(--shadow-xl), 0 0 30px rgba(220, 38, 38, 0.4);
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(212, 175, 55, 0.3);
   filter: brightness(1.1) saturate(1.1);
 }
 
@@ -2630,7 +2987,6 @@ section.gallery {
   font-weight: 500;
   backdrop-filter: blur(10px);
 }
-
 /* Gallery CTA */
 .gallery-cta {
   text-align: center;
@@ -2643,6 +2999,55 @@ section.gallery {
   overflow: hidden;
   border: 1px solid var(--border-light);
   backdrop-filter: blur(15px);
+}
+
+/* Gold highlight for first 3 service cards in each category */
+.services-category
+  .services-detailed-grid
+  .service-detailed-card:nth-child(-n + 3) {
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(212, 175, 55, 0.05) 0%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+.services-category
+  .services-detailed-grid
+  .service-detailed-card:nth-child(-n + 3)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  z-index: 1;
+}
+
+.services-category
+  .services-detailed-grid
+  .service-detailed-card:nth-child(-n + 3)
+  h3 {
+  color: var(--primary-color);
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.services-category
+  .services-detailed-grid
+  .service-detailed-card:nth-child(-n + 3)
+  h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background: var(--gradient-primary);
 }
 
 .gallery-cta::before {
@@ -2708,7 +3113,7 @@ section.gallery {
 
 .instagram-link:hover {
   transform: translateY(-3px) scale(1.03);
-  box-shadow: var(--shadow-xl), 0 0 30px rgba(220, 38, 38, 0.4);
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(212, 175, 55, 0.3);
   filter: brightness(1.1) saturate(1.1);
 }
 
@@ -2817,14 +3222,14 @@ section.gallery {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--border-glow);
-  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15), var(--shadow-md);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2), var(--shadow-md);
   background: var(--bg-secondary);
 }
 
 /* Before/After Section */
 .before-after {
   padding: 4rem 0;
-  background: var(--white);
+  background: var(--bg-primary);
 }
 
 .slider-container {
@@ -3453,7 +3858,7 @@ section.testimonials {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1), 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -3796,7 +4201,8 @@ footer.footer {
 
 .whatsapp-sticky a:hover {
   transform: scale(1.15) rotate(5deg);
-  box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
+  filter: brightness(1.1);
 }
 
 .whatsapp-sticky img,
