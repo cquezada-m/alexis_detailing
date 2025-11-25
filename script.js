@@ -2577,22 +2577,25 @@ window.getFormData = getFormData;
 
 // Función para cerrar la cinta superior
 function closeBanner() {
-  const banner = document.querySelector('.top-banner');
-  
+  const banner = document.querySelector(".top-banner");
+
   if (banner) {
     // Agregar clase hidden para animación
-    banner.classList.add('hidden');
-    
+    banner.classList.add("hidden");
+
     // Tracking del evento
-    gtmTrack('banner_closed', {
-      banner_type: 'autonomous_service',
+    gtmTrack("banner_closed", {
+      banner_type: "autonomous_service",
       timestamp: new Date().toISOString(),
     });
-    
+
     // Guardar en localStorage que el usuario cerró la cinta
     try {
-      localStorage.setItem('alexisDetailing_bannerClosed', 'true');
-      localStorage.setItem('alexisDetailing_bannerClosedTime', Date.now().toString());
+      localStorage.setItem("alexisDetailing_bannerClosed", "true");
+      localStorage.setItem(
+        "alexisDetailing_bannerClosedTime",
+        Date.now().toString()
+      );
     } catch (e) {
       // Silently fail if localStorage is not available
     }
@@ -2602,24 +2605,24 @@ function closeBanner() {
 // Verificar si la cinta debe mostrarse al cargar la página
 function checkBannerVisibility() {
   try {
-    const bannerClosed = localStorage.getItem('alexisDetailing_bannerClosed');
-    const closedTime = localStorage.getItem('alexisDetailing_bannerClosedTime');
-    
-    if (bannerClosed === 'true' && closedTime) {
+    const bannerClosed = localStorage.getItem("alexisDetailing_bannerClosed");
+    const closedTime = localStorage.getItem("alexisDetailing_bannerClosedTime");
+
+    if (bannerClosed === "true" && closedTime) {
       const timeElapsed = Date.now() - parseInt(closedTime);
       const oneDayInMs = 24 * 60 * 60 * 1000; // 24 horas
-      
+
       // Si han pasado menos de 24 horas, mantener la cinta oculta
       if (timeElapsed < oneDayInMs) {
-        const banner = document.querySelector('.top-banner');
-        
+        const banner = document.querySelector(".top-banner");
+
         if (banner) {
-          banner.classList.add('hidden');
+          banner.classList.add("hidden");
         }
       } else {
         // Si han pasado más de 24 horas, limpiar el localStorage
-        localStorage.removeItem('alexisDetailing_bannerClosed');
-        localStorage.removeItem('alexisDetailing_bannerClosedTime');
+        localStorage.removeItem("alexisDetailing_bannerClosed");
+        localStorage.removeItem("alexisDetailing_bannerClosedTime");
       }
     }
   } catch (e) {
@@ -2631,4 +2634,365 @@ function checkBannerVisibility() {
 window.closeBanner = closeBanner;
 
 // Verificar visibilidad de la cinta al cargar la página
-document.addEventListener('DOMContentLoaded', checkBannerVisibility);
+document.addEventListener("DOMContentLoaded", checkBannerVisibility);
+
+// ===== SERVICES CAROUSEL FUNCTIONALITY =====
+
+function initServicesCarousel() {
+  const carousel = document.querySelector(".services-carousel-container");
+  if (!carousel) return;
+
+  const slides = document.querySelectorAll(".services-carousel-slide");
+  const indicators = document.querySelectorAll(".services-carousel-indicator");
+  const prevButton = document.querySelector(".services-carousel-prev");
+  const nextButton = document.querySelector(".services-carousel-next");
+  const currentSlideSpan = document.querySelector(".services-current-slide");
+
+  let currentIndex = 0;
+  let isAnimating = false;
+  let autoPlayInterval;
+  const AUTO_PLAY_DELAY = 8000; // 8 segundos
+
+  // Función para actualizar el carousel
+  function goToSlide(index, direction = "next") {
+    if (isAnimating || index === currentIndex) return;
+
+    isAnimating = true;
+    const oldIndex = currentIndex;
+    currentIndex = index;
+
+    // Pausar videos del slide anterior
+    const oldVideo = slides[oldIndex].querySelector(".services-carousel-video");
+    if (oldVideo) {
+      oldVideo.pause();
+    }
+
+    // Remover clase active del slide anterior
+    slides[oldIndex].classList.remove("active");
+    indicators[oldIndex].classList.remove("active");
+
+    // Agregar clase active al nuevo slide
+    slides[currentIndex].classList.add("active");
+    indicators[currentIndex].classList.add("active");
+
+    // Reproducir video del nuevo slide
+    const newVideo = slides[currentIndex].querySelector(
+      ".services-carousel-video"
+    );
+    if (newVideo) {
+      newVideo.play().catch(() => {
+        // Auto-play puede fallar, no hacer nada
+      });
+    }
+
+    // Actualizar contador
+    if (currentSlideSpan) {
+      currentSlideSpan.textContent = String(currentIndex + 1).padStart(2, "0");
+    }
+
+    // Tracking
+    gtmTrack("carousel_slide_change", {
+      from_slide: oldIndex,
+      to_slide: currentIndex,
+      direction: direction,
+      service:
+        slides[currentIndex].querySelector(".services-carousel-title")
+          ?.textContent || "",
+      timestamp: new Date().toISOString(),
+    });
+
+    // Reset animating flag
+    setTimeout(() => {
+      isAnimating = false;
+    }, 800);
+  }
+
+  // Función para ir al siguiente slide
+  function nextSlide() {
+    const nextIndex = (currentIndex + 1) % slides.length;
+    goToSlide(nextIndex, "next");
+  }
+
+  // Función para ir al slide anterior
+  function prevSlide() {
+    const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
+    goToSlide(prevIndex, "prev");
+  }
+
+  // Event listeners para botones de navegación
+  if (prevButton) {
+    prevButton.addEventListener("click", () => {
+      prevSlide();
+      resetAutoPlay();
+    });
+  }
+
+  if (nextButton) {
+    nextButton.addEventListener("click", () => {
+      nextSlide();
+      resetAutoPlay();
+    });
+  }
+
+  // Event listeners para indicadores
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener("click", () => {
+      if (index !== currentIndex) {
+        const direction = index > currentIndex ? "next" : "prev";
+        goToSlide(index, direction);
+        resetAutoPlay();
+      }
+    });
+  });
+
+  // Navegación con teclado
+  document.addEventListener("keydown", (e) => {
+    // Solo funcionar si el carousel está visible
+    const carouselRect = carousel.getBoundingClientRect();
+    const isVisible =
+      carouselRect.top < window.innerHeight && carouselRect.bottom > 0;
+
+    if (!isVisible) return;
+
+    if (e.key === "ArrowLeft") {
+      prevSlide();
+      resetAutoPlay();
+    } else if (e.key === "ArrowRight") {
+      nextSlide();
+      resetAutoPlay();
+    }
+  });
+
+  // Auto-play
+  function startAutoPlay() {
+    autoPlayInterval = setInterval(nextSlide, AUTO_PLAY_DELAY);
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
+  }
+
+  function resetAutoPlay() {
+    stopAutoPlay();
+    startAutoPlay();
+  }
+
+  // Pausar auto-play cuando el usuario interactúa
+  carousel.addEventListener("mouseenter", stopAutoPlay);
+  carousel.addEventListener("mouseleave", startAutoPlay);
+
+  // Pausar cuando la página no está visible
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopAutoPlay();
+      // Pausar todos los videos
+      document.querySelectorAll(".services-carousel-video").forEach((video) => {
+        video.pause();
+      });
+    } else {
+      startAutoPlay();
+      // Reproducir video del slide actual
+      const currentVideo = slides[currentIndex].querySelector(
+        ".services-carousel-video"
+      );
+      if (currentVideo) {
+        currentVideo.play().catch(() => {});
+      }
+    }
+  });
+
+  // Touch/Swipe support para mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  carousel.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    },
+    { passive: true }
+  );
+
+  carousel.addEventListener(
+    "touchend",
+    (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    },
+    { passive: true }
+  );
+
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe left - next slide
+        nextSlide();
+      } else {
+        // Swipe right - previous slide
+        prevSlide();
+      }
+      resetAutoPlay();
+    }
+  }
+
+  // Inicializar: reproducir video del primer slide
+  const firstVideo = slides[0].querySelector(".services-carousel-video");
+  if (firstVideo) {
+    // Intentar reproducir con interacción del usuario
+    firstVideo.play().catch(() => {
+      // Si falla el autoplay, agregar listener para primera interacción
+      const playOnInteraction = () => {
+        firstVideo.play().catch(() => {});
+        document.removeEventListener("click", playOnInteraction);
+        document.removeEventListener("touchstart", playOnInteraction);
+      };
+      document.addEventListener("click", playOnInteraction, { once: true });
+      document.addEventListener("touchstart", playOnInteraction, {
+        once: true,
+      });
+    });
+  }
+
+  // Iniciar auto-play
+  startAutoPlay();
+
+  // Tracking inicial
+  gtmTrack("services_carousel_init", {
+    total_slides: slides.length,
+    auto_play_delay: AUTO_PLAY_DELAY,
+    timestamp: new Date().toISOString(),
+  });
+
+  // Intersection Observer para reproducir videos solo cuando estén visibles
+  const videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target;
+        const slide = video.closest(".services-carousel-slide");
+
+        if (entry.isIntersecting && slide.classList.contains("active")) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    },
+    { threshold: 0.5 }
+  );
+
+  // Observar todos los videos
+  document.querySelectorAll(".services-carousel-video").forEach((video) => {
+    videoObserver.observe(video);
+
+    // Asegurar que los videos estén muteados (para autoplay)
+    video.muted = true;
+    video.playsInline = true;
+  });
+}
+
+// Inicializar el carousel cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", initServicesCarousel);
+
+// Hacer la función global por si se necesita reinicializar
+window.initServicesCarousel = initServicesCarousel;
+
+// ===== BUSINESS SECTION FUNCTIONALITY =====
+
+// Función para enviar mensaje de WhatsApp empresarial
+function sendBusinessWhatsApp() {
+  const message = `¡Hola! Estoy interesado en los servicios corporativos de Alexis Detailing.
+
+📋 *Información de mi empresa:*
+• Tipo de negocio: [Automotora / Flota / Rent a Car / Otro]
+• Cantidad de vehículos: [Número aproximado]
+• Frecuencia de servicio: [Semanal / Quincenal / Mensual]
+
+Me gustaría recibir:
+✓ Cotización personalizada
+✓ Información sobre planes corporativos
+✓ Condiciones comerciales
+
+¡Gracias!`;
+
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappURL = `https://wa.me/56975129990?text=${encodedMessage}`;
+
+  // Tracking GTM
+  gtmTrack("click_business_whatsapp", {
+    location: "business_section",
+    cta_type: "empresas",
+    timestamp: new Date().toISOString(),
+  });
+
+  // Abrir WhatsApp
+  window.open(whatsappURL, "_blank");
+}
+
+// Hacer la función global
+window.sendBusinessWhatsApp = sendBusinessWhatsApp;
+
+// Inicializar animaciones de estadísticas en business section
+function initBusinessStatsAnimation() {
+  const statCards = document.querySelectorAll(".business-stat-card");
+
+  if (statCards.length === 0) return;
+
+  const statsObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const statNumber = entry.target.querySelector(".stat-number");
+          if (statNumber && !statNumber.classList.contains("animated")) {
+            const target = parseInt(
+              statNumber.getAttribute("data-target") || statNumber.textContent
+            );
+            animateBusinessCounter(statNumber, target);
+            statNumber.classList.add("animated");
+          }
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.5 }
+  );
+
+  statCards.forEach((card) => {
+    statsObserver.observe(card);
+  });
+}
+
+function animateBusinessCounter(element, target) {
+  let current = 0;
+  const increment = target / 60;
+  const duration = 1500;
+  const stepTime = duration / 60;
+
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+
+    // Detectar si es un número con texto (como "48hrs")
+    const originalText = element.textContent;
+    if (originalText.includes("hrs")) {
+      element.textContent = Math.floor(current) + "hrs";
+    } else if (originalText.includes("+")) {
+      element.textContent = Math.floor(current) + "+";
+    } else {
+      element.textContent = Math.floor(current);
+    }
+  }, stepTime);
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", function () {
+  initBusinessStatsAnimation();
+});
